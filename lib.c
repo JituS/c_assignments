@@ -24,13 +24,12 @@ int areEqual(ArrayUtil array1, ArrayUtil array2){
 ArrayUtil resize(ArrayUtil util, int length){
 	char *base = (char *)util.base;
 	char *newbase = calloc(util.typeSize, length);
-	char i = 0;
-	while(i != (util.typeSize * length)){
+  for(char i = 0;i < util.typeSize * length;i++){
 		newbase[i] = base[i];
-		i++;
-	};	
+  };
 	util.length = length;
 	util.base = newbase;
+  free(base);
 	return util;
 };
 
@@ -38,29 +37,11 @@ int findIndex(ArrayUtil array, void *element){
 	char *base = (char *)array.base;
 	int length = array.length * array.typeSize;
 	int i = 0,j = 0;
-	while(i < length){
-		if(memcmp(base + i,element,array.typeSize) == 0) 
-			return j;	
-		i += array.typeSize; 
+  	for(int i = 0;i < length;i+=array.typeSize){
+		if(memcmp(base + i,element,array.typeSize) == 0) return j;	
 		j++;
-	}
+  	};
 	return -1;
-
-	// char *base = (char *)array.base;
-	// char *value = (char *)element;
-	// int length = array.length;
-	// int j = 0;
-	// for(int i = 0;i != length; i++){
-	// 	int k = 0;
-	// 	for(int x = 0;x < array.typeSize; x++){
-	// 		if(value[x] == base[j]) {
-	// 			k++;
-	// 		}
-	// 		if(k == array.typeSize) return i;
-	// 		j++;
-	// 	};
-	// };
-	// return -1;
 };
 
 void dispose(ArrayUtil util){
@@ -68,14 +49,41 @@ void dispose(ArrayUtil util){
 };
 
 void *findFirst(ArrayUtil util, MatchFunc match, void *hint){
-  char *base = (char *)util.base;
-  int i = 0;
-  while(i < util.length * util.typeSize){
-    int flag = match(hint, base + i);
-    if(flag == 1){
-      return base + i;
-    }
-    i += util.typeSize;
-  }
+	char *base = (char *)util.base;
+  	for(int i = 0; i<util.length*util.typeSize; i+=util.typeSize){
+		int flag = match(hint, base + i);
+		if(flag == 1) return base + i;
+ 	}
+	return NULL;
+}
+
+void *findLast(ArrayUtil util, MatchFunc match, void *hint){
+	char *base = (char *)util.base;
+	int l = (util.length * util.typeSize) - util.typeSize;
+	for(int i = l; i >= 0; i-=util.typeSize){
+		int flag = match(hint, base + i);
+		if(flag == 1) return base + i;
+ 	}
   return NULL;
+};
+
+int count(ArrayUtil util, MatchFunc match, void *hint){
+	char *base = (char *)util.base;
+	int counter = 0;
+  for(int i=0;i < util.length * util.typeSize;i+=util.typeSize){
+		int flag = match(hint, base + i);
+		if(flag == 1) counter++;
+  };
+  return counter;
+}
+int filter(ArrayUtil util, MatchFunc match, void* hint, void **destination, int maxItems ){
+	char *base = (char *)util.base;
+	int counter = 0;
+	for(int i=0;i < util.length * util.typeSize;i+=util.typeSize){
+		if(match(hint, base + i) == 1){
+			*(destination + counter) = base + i;
+			counter++;
+		};
+	};
+	return counter;
 }

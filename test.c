@@ -83,21 +83,97 @@ void disposeTest(){
 int isDivisible(void *hint, void *item){
   int *hint_ = (int *)hint;  
   int *item_ = (int *)item;
-  return (*item_ % *hint_) == 0;   
+  if(*item_ == 0) return 0;
+  return (*item_ % *hint_ == 0);   
 };  
 
-void matchTest(){
+void findFirstTest(){
 	int length = 6;
 	int typeSize = 4;
 	ArrayUtil array = create(typeSize,length);
 	int *array1_base = (int *)array.base;
-	array1_base[0] = 1;
-	array1_base[1] = 2;
-  array1_base[2] = 6;
-  array1_base[3] = 8;
-  int hint = 3;
-  int *x = (int *)findFirst(array, &isDivisible, &hint);
-  printf("%d\n",*x);
+	array1_base[0] = 3;
+	array1_base[1] = 3;
+	array1_base[2] = 6;
+	array1_base[3] = 8;
+	int hint = 8, *x;
+	x = (int *)findFirst(array, &isDivisible, &hint);
+	assert(*x == 8);
+	hint = 3;
+	x = (int *)findFirst(array, &isDivisible, &hint);
+	assert(*x == 3);
+	hint = 2;
+	x = (int *)findFirst(array, &isDivisible, &hint);
+	assert(*x == 6);
+	hint = 5;
+	x = findFirst(array, &isDivisible, &hint);
+	assert(x == NULL);
+};
+
+void findLastTest(){
+	int length = 6;
+	int typeSize = 4;
+	ArrayUtil array = create(typeSize,length);
+	int *array1_base = (int *)array.base;
+	array1_base[0] = 3;
+	array1_base[1] = 9;
+	array1_base[2] = 6;
+	array1_base[3] = 8;
+	int hint = 8, *x;
+	x = (int *)findLast(array, &isDivisible, &hint);
+	assert(*x == 8);
+	hint = 3;
+	x = (int *)findLast(array, &isDivisible, &hint);
+	assert(*x == 6);
+	hint = 2;
+	x = (int *)findLast(array, &isDivisible, &hint);
+	assert(*x == 8);
+	hint = 5;
+	x = findLast(array, &isDivisible, &hint);
+	assert(x == NULL);
+
+}
+
+void countTest(){
+	int length = 6;
+	int typeSize = 4;
+	ArrayUtil array = create(typeSize,length);
+	int *array1_base = (int *)array.base;
+	array1_base[0] = 3;
+	array1_base[1] = 9;
+	array1_base[2] = 6;
+	array1_base[3] = 8;
+	int hint = 8, x;
+	x = (int)count(array, &isDivisible, &hint);
+	assert(x == 1);
+	hint = 3;
+	x = (int)count(array, &isDivisible, &hint);
+	assert(x == 3);
+	hint = 2;
+	x = (int)count(array, &isDivisible, &hint);
+	assert(x == 2);
+	hint = 5;
+	x = count(array, &isDivisible, &hint);
+	assert(x == 0);
+}
+
+void filterTest(){
+	int length = 6;
+	int typeSize = 8;
+	ArrayUtil array = create(typeSize,length);
+	int *array1_base = (int *)array.base;
+	array1_base[0] = 12012;
+	array1_base[1] = 12;
+	array1_base[2] = 9;
+	array1_base[3] = 33;
+	ArrayUtil destination = create(4,length);
+	int hint = 3, x;
+	x = (int)filter(array, &isDivisible, &hint,&(destination.base),length);
+	int **a = (int **)&(destination.base);
+	printf("%d\n",*a[0]);
+	printf("%d\n",*a[1]);
+	printf("%d\n",*a[2]);
+	printf("%d\n",*a[3]);
 };
 
 int main(void)
@@ -107,6 +183,9 @@ int main(void)
 	resizeTest();
 	findIndexTest();
 	disposeTest();
-  matchTest();
+	findFirstTest();
+	findLastTest();
+  countTest();
+  filterTest();
 	return 0;
 }
