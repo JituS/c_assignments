@@ -76,14 +76,41 @@ int count(ArrayUtil util, MatchFunc match, void *hint){
   };
   return counter;
 }
-int filter(ArrayUtil util, MatchFunc match, void* hint, void **destination, int maxItems ){
-	char *base = (char *)util.base;
+
+int filter(ArrayUtil util, MatchFunc match, void* hint, void **destination, int maxItems){
 	int counter = 0;
 	for(int i=0;i < util.length * util.typeSize;i+=util.typeSize){
-		if(match(hint, base + i) == 1){
-			*(destination + counter) = base + i;
-			counter++;
+		if(match(hint, &util.base[i]) == 1){
+      if(counter<maxItems){
+			  destination[counter] = &util.base[i];
+			  counter++;
+      }
 		};
 	};
+
 	return counter;
 }
+
+void map(ArrayUtil source, ArrayUtil destination, ConvertFunc convert, void* hint){
+  void *source_base = source.base;
+  void *destination_base = destination.base;
+  for(int i = 0;i<source.length;i++){
+    convert(hint,source_base + (i*source.typeSize),destination_base + (i*destination.typeSize));
+  };
+}
+void forEach(ArrayUtil util, OperationFunc* operation, void* hint){
+  void *util_base = util.base;
+  for(int i = 0;i < util.length;i++){
+    operation(hint,util_base + (i*util.typeSize));
+  };
+};
+
+void *reduce(ArrayUtil util, ReducerFunc* reducer, void* hint, void* intialValue){
+  void *util_base = util.base;
+  void *prev = intialValue;
+  for(int i = 0;i < util.length;i++){
+    prev = reducer(hint, prev, util_base + (i * util.typeSize));
+  };
+  int *a = (int *)prev;
+  return prev;
+};
