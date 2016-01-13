@@ -22,14 +22,8 @@ int areEqual(ArrayUtil array1, ArrayUtil array2){
 };
 
 ArrayUtil resize(ArrayUtil util, int length){
-	char *base = (char *)util.base;
-	char *newbase = calloc(util.typeSize, length);
-  for(char i = 0;i < util.typeSize * length;i++){
-		newbase[i] = base[i];
-  };
-	util.length = length;
-	util.base = newbase;
-  free(base);
+  util.base = realloc(util.base,length);
+  util.length = length;
 	return util;
 };
 

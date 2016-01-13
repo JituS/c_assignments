@@ -8,6 +8,19 @@ void test_create(){
 	int typeSize = 1;
 	ArrayUtil array = create(typeSize,length);
 	int *base = (int *)array.base;
+	base[0] = 'a';
+	base[1] = 'b';
+	assert(base[0]=='a');
+	assert(base[1]=='b');
+	assert(base[2]==0);
+	assert(array.length==6);
+};
+
+void test_create_char(){
+	int length = 6;
+	int typeSize = 4;
+	ArrayUtil array = create(typeSize,length);
+	int *base = (int *)array.base;
 	base[0] = 1;
 	base[1] = 2;
 	assert(base[0]==1);
@@ -15,7 +28,6 @@ void test_create(){
 	assert(base[2]==0);
 	assert(array.length==6);
 };
-
 void test_areEqual(){
 	int length = 2;
 	int typeSize = 4;
@@ -31,6 +43,21 @@ void test_areEqual(){
 	assert(areEqual(array1,array2));
 };	
 
+void test_areEqual2(){
+	int length = 2;
+	int typeSize = 1;
+	ArrayUtil array1 = create(typeSize,length);
+	int *array1_base = (int *)array1.base;
+	array1_base[0] = 'a';
+	array1_base[1] = 'b';
+
+	ArrayUtil array2 = create(4,length);
+	int *array2_base = (int *)array2.base;
+	array2_base[0] = 12;
+	array2_base[1] = 2;
+	assert(!areEqual(array1,array2));
+};	
+
 void test_resize(){
 	int length = 3;
 	int typeSize = 4;
@@ -44,7 +71,25 @@ void test_resize(){
 	int *base = resized.base;
 	assert(base[0] == 1);
 	assert(base[1] == 2);
-	assert(base[2] == 0);
+  assert(resized.length == 2);
+};
+
+void test_resize2(){
+	int length = 3;
+	int typeSize = 4;
+	ArrayUtil array1 = create(typeSize,length);
+	int *array1_base = (int *)array1.base;
+	array1_base[0] = 1;
+	array1_base[1] = 2;
+	array1_base[2] = 3;
+	ArrayUtil resized = resize(array1, 5);
+	int *base = resized.base;
+  for(int i=0;i<3;i++){
+    assert(base[i] == i+1);
+  };
+  assert(base[3] == 0);
+  assert(base[4] == 0);
+  assert(resized.length == 5);
 };
 
 void test_findIndex(){
@@ -179,6 +224,7 @@ void test_filter(){
   assert(*a[2] == 9);
   assert(*a[3] == 33);
   assert(*a[4] == 30);
+  assert(destination.length == 7);
 };
 
 void  multiply(void *hint, void *sourceItem, void *destinationItem){
@@ -251,19 +297,3 @@ void test_reduce(){
   assert(*out == 19);
 };
 
-int main(void)
-  {
-    test_create();
-    test_areEqual();
-    test_resize();
-    test_findIndex();
-    test_dispose();
-    test_findFirst();
-    test_findLast();
-    test_count();
-    test_filter();
-    test_map();
-    test_forEach();
-    test_reduce();
-    return 0;
-  }
