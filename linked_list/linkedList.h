@@ -10,6 +10,12 @@ typedef struct{
 	int length;
 } LinkedList;
 
+typedef struct st{
+	char name[10];
+	int std;
+	struct st *next;
+} Students;
+
 typedef int MatchFunc(void* hint, void* item);
 typedef void ConvertFunc(void* hint, void* sourceItem, void* destinationItem);
 typedef void *Reducer(void* hint, void* previousItem, void* item);

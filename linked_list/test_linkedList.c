@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "linkedList.h"
 #include <assert.h>
@@ -26,6 +27,22 @@ void test_add_to_list(void){
   assert(*(int *)list.tail->value == 3);
   assert(*(int *)list.head->next->value == 2);
   assert(list.tail->next==NULL);
+};
+
+void test_add_to_list_struct(void){
+  LinkedList list = createList();
+  Students jitu;
+  Students minni;
+  strcpy(jitu.name,"jitu");
+  strcpy(minni.name,"minni");
+  jitu.std = 8;
+  minni.std = 8;
+  assert(add_to_list(&list, &jitu)==1);
+  assert(add_to_list(&list, &minni)==2);
+  assert(list.length == 2);
+  assert(list.head->value == &jitu);
+  assert(list.tail->value == &minni);
+  assert(list.head->next->value == &minni);
 };
 
 void test_add_to_list_char(void){
@@ -353,21 +370,6 @@ void test_reduce(){
 };
 
 int main(void){
-  test_createList();
-  test_add_to_list();
-  test_add_to_list_char();
-  test_get_first_element();
-  test_get_first_element_char();
-  test_get_last_element();
-  test_get_last_element_char();
-  test_forEach();
-  test_getElementAt();
-  test_indexOf();
-  test_deleteElementAt();
-  test_asArray();
-  test_filter();
-  test_reverse();
-  test_deleteElementAtChar();
-  test_map();
-  test_reduce();
+  test_add_to_list_struct();
 };
+

@@ -122,7 +122,7 @@ LinkedList map(LinkedList list, ConvertFunc convert, void *hint){
   LinkedList destination = createList();
   for(int i = 0; i < list.length; i++){
     void *ele;
-    ele = (void *)malloc(4);
+    ele = (void *)malloc(8);
     convert(hint, element->value, ele);
     element = element->next;
     add_to_list(&destination, ele);
