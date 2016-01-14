@@ -20,7 +20,7 @@ int add_to_list(LinkedList *list,void *element){
     list->head = ele;
     list->tail = ele;
   }else{
-    ele->index = list->tail->index++;
+    ele->index = list->length;
     list->tail->next = ele;
     list->tail = ele;
   };
@@ -44,25 +44,28 @@ void forEach(LinkedList list, ElementProcessor e){
 };
 
 void * getElementAt(LinkedList list, int index){
+  Element *node = list.head;
   if(index < 0 || index > list.length - 1) return NULL;
   for(int i=0;i<index;i++){
-    list.head = list.head->next;
+    node = node->next;
   };
-  return list.head->value;
+  return node->value;
 };
 
 int indexOf(LinkedList list, void *element){
+  Element *node = list.head;
   for(int i=0;i<list.length;i++){
-    if(list.head->value == element) return i;
-    list.head = list.head->next;
+    if(node->value == element) return i;
+    node = node->next;
   };  
   return -1;
 };
-void * deleteElementAt(LinkedList *list, int index){
+
+void *deleteElementAt(LinkedList *list, int index){
   if(index > list->length || index < 0) return NULL;
   Element *element = list->head;
   Element *deletedElement;
-  if(index == 0) {
+  if(index == 0){
     deletedElement = list->head;
     list->head = list->head->next;
   }else{
@@ -81,3 +84,60 @@ void * deleteElementAt(LinkedList *list, int index){
   free(deletedElement);
   return deletedElement->value;
 };
+
+int asArray(LinkedList list, void **array, int maxElements){
+  int limit = (maxElements < list.length) ? maxElements : list.length; 
+  Element *node = list.head;
+  for(int i = 0;i < limit; i++){
+    array[i] = node->value;
+    node = node->next;
+  };
+  return limit;
+};
+
+LinkedList filter(LinkedList list, MatchFunc match, void *hint){
+  LinkedList filtered = createList();
+  Element *node = list.head;
+  for(int i=0; i<list.length; i++){
+    if(match(hint, node->value))
+      add_to_list(&filtered, node->value);
+    node = node->next;
+  };
+  return filtered;
+};
+
+LinkedList reverse(LinkedList list){
+  LinkedList reversed = createList();
+  void *arrayUtil = calloc(8,list.length);
+  void **array = arrayUtil;
+  asArray(list, array, list.length);
+  for(int i = list.length-1; i >= 0; i--){
+    add_to_list(&reversed, array[i]);
+  };
+  return reversed;
+};
+
+LinkedList map(LinkedList list, ConvertFunc convert, void *hint){
+  Element *element = list.head;
+  LinkedList destination = createList();
+  for(int i = 0; i < list.length; i++){
+    void *ele;
+    ele = (void *)malloc(4);
+    convert(hint, element->value, ele);
+    element = element->next;
+    add_to_list(&destination, ele);
+  };
+  return destination;
+};
+
+
+void *reduce(LinkedList list, Reducer reduce, void *hint, void *initialValue){
+  Element *element = list.head;
+  for(int i = 0; i < list.length; i++){
+    initialValue = reduce(hint, initialValue, element->value);
+    element = element->next;
+  };
+  return initialValue;
+};
+
+
